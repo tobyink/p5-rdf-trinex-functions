@@ -43,8 +43,12 @@ foreach my $nodetype (qw< iri blank variable literal >)
 {
 	my $orig = RDF::Trine->can($nodetype);
 	
-	*$nodetype = sub
+	my $sub;
+	$sub = sub
 	{
+		shift if blessed $_[0] && $_[0]->isa(__PACKAGE__);
+		return $sub->(@{$_[0]}) if ref $_[0] eq 'ARRAY';
+	
 		my $node = shift;
 		
 		if (blessed($node) and $node->isa('RDF::Trine::Node'))
@@ -73,11 +77,22 @@ foreach my $nodetype (qw< iri blank variable literal >)
 		}
 		
 		$orig->("$node", @_);
-	}
+	};
+	
+	*$nodetype = $sub;
+}
+
+sub new
+{
+	my ($class, @args) = @_;
+	bless \@args, $class;
 }
 
 sub curie
 {
+	shift if blessed $_[0] && $_[0]->isa(__PACKAGE__);
+	return curie(@{$_[0]}) if ref $_[0] eq 'ARRAY';
+	
 	my $node = shift;
 	
 	if (blessed($node) and $node->isa('RDF::Trine::Node'))
@@ -101,6 +116,9 @@ sub curie
 
 sub statement
 {
+	shift if blessed $_[0] && $_[0]->isa(__PACKAGE__);
+	return statement(@{$_[0]}) if ref $_[0] eq 'ARRAY';
+	
 	my (@nodes) = map {
 		if (blessed($_) and $_->isa('RDF::Trine::Node'))  { $_ }
 		elsif (blessed($_) and $_->isa('URI'))            { iri($_) }
@@ -114,6 +132,9 @@ sub statement
 
 sub model
 {
+	shift if blessed $_[0] && $_[0]->isa(__PACKAGE__);
+	return model(@{$_[0]}) if ref $_[0] eq 'ARRAY';
+	
 	my $store = shift;
 	return $store if $store->isa('RDF::Trine::Model');
 	
@@ -124,6 +145,9 @@ sub model
 
 sub parse
 {
+	shift if blessed $_[0] && $_[0]->isa(__PACKAGE__);
+	return parse(@{$_[0]}) if ref $_[0] eq 'ARRAY';
+	
 	my ($thing, %opts) = @_;
 	
 	my $model  = delete($opts{into}) // delete($opts{model});
@@ -199,8 +223,12 @@ sub _build_serializer
 {
 	my ($class, $name, $arg) = @_;
 	
-	return sub
+	my $sub;
+	$sub = sub
 	{
+		shift if blessed $_[0] && $_[0]->isa(__PACKAGE__);
+		return $sub->(@{$_[0]}) if ref $_[0] eq 'ARRAY';
+		
 		my ($data, %opts) = do {
 			(@_==2)
 				? ($_[0], as => $_[1])
@@ -390,6 +418,37 @@ Examples:
 
 =back
 
+=head2 Array References
+
+In addition to the above interface, each function supports being called with a
+single arrayref argument. In those cases, the arrayref is dereferenced into an
+array, and treated as a list of arguments. That is, the following are
+equivalent:
+
+  foo($bar, $baz);
+  foo([$bar, $baz]);
+
+This is handy if you're writing a module of your own and wish to accept some
+RDF data:
+
+  sub my_method {
+    my ($self, $rdf, $foo) = @_;
+    $rdf = parse($rdf);
+    
+    ....
+  }
+
+Your method can now be called like this:
+
+  $object->my_method($model, 'foo');
+  
+  $object->my_method($url, 'foo');
+  
+  $object->my_method(
+      [ $filehandle, as => 'Turtle', base => $uri ],
+      'foo',
+  );
+
 =head2 Export
 
 By default, nothing is exported. You need to request things:
@@ -426,6 +485,24 @@ When exporting the C<serialize> function you may set a default format:
       serialize => { -type => 'NTriples' };
 
 This will be used when C<serialize> is called with no explicit type given.
+
+=head2 Pseudo-OO interface
+
+=over
+
+=item C<new>
+
+This acts as a constructor, returning a new RDF::TrineX::Functions object.
+
+=back
+
+All the normal functions can be called as methods:
+
+ my $R = RDF::TrineX::Functions->new;
+ my $model = $R->model;
+
+There's no real advantage to using this module as an object, but it can
+help you avoid namespace pollution.
 
 =head1 BUGS
 
