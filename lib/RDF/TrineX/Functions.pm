@@ -43,7 +43,7 @@ foreach my $nodetype (qw< iri blank variable literal >)
 {
 	my $orig = $nodetype eq 'iri'
 		? sub { RDF::Trine::Node::Resource->new(@_) }
-		: RDF::Trine->can($nodetype)
+		: RDF::Trine->can($nodetype);
 		
 	my $sub;
 	$sub = sub
@@ -112,7 +112,7 @@ sub curie
 		return RDF::Trine::blank($1, @_);
 	}
 	
-	state $ns = RDF::NS::Trine->new;
+	state $ns = RDF::NS::Trine->new('any');
 	$ns->URI($node);
 }
 
@@ -138,7 +138,7 @@ sub model
 	return model(@{$_[0]}) if ref $_[0] eq 'ARRAY';
 	
 	my $store = shift;
-	return $store if $store->isa('RDF::Trine::Model');
+	return $store if blessed($store) && $store->isa('RDF::Trine::Model');
 	
 	$store
 		? RDF::Trine::Model->new($store)
@@ -242,6 +242,7 @@ sub _build_serializer
 			// delete($opts{as})
 			// delete($opts{using})
 			// $arg->{type}
+			// $arg->{-type}
 			// 'Turtle';
 		
 		my $file = delete($opts{to})
@@ -250,7 +251,7 @@ sub _build_serializer
 		
 		if (not blessed $ser)
 		{
-			$ser = RDF::Trine::Parser->new($ser, %opts);
+			$ser = RDF::Trine::Serializer->new($ser, %opts);
 		}
 		
 		if (blessed $data and $data->isa('RDF::Trine::Iterator'))
@@ -325,7 +326,7 @@ Other than that, no magic.
 
 =item C<< curie >>
 
-Like C<iri> but passes strings though L<RDF::NS::Trine>.
+Like C<iri> but passes strings through L<RDF::NS::Trine>.
 
 =item C<< statement(@nodes) >>
 
