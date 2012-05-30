@@ -7,7 +7,7 @@ use utf8;
 
 BEGIN {
 	$RDF::TrineX::Functions::AUTHORITY = 'cpan:TOBYINK';
-	$RDF::TrineX::Functions::VERSION   = '0.001';
+	$RDF::TrineX::Functions::VERSION   = '0.002';
 }
 
 use Carp qw< croak >;
@@ -188,7 +188,7 @@ sub parse
 	}
 	elsif (not blessed $parser and $parser =~ m{/} and $parser !~ m{^RDF/}i)
 	{
-		$parser = RDF::Trine::Parser->parser_by_media_type($parser);
+		$parser = RDF::Trine::Parser->parser_by_media_type($parser)->new;
 	}
 	elsif (not blessed $parser)
 	{
