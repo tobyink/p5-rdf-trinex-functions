@@ -41,8 +41,10 @@ use Sub::Exporter -setup => {
 
 foreach my $nodetype (qw< iri blank variable literal >)
 {
-	my $orig = RDF::Trine->can($nodetype);
-	
+	my $orig = $nodetype eq 'iri'
+		? sub { RDF::Trine::Node::Resource->new(@_) }
+		: RDF::Trine->can($nodetype)
+		
 	my $sub;
 	$sub = sub
 	{
