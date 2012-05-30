@@ -15,6 +15,7 @@ use RDF::NS::Trine;
 use RDF::Trine qw< store >;
 use RDF::Trine::Namespace qw< rdf rdfs owl xsd >;
 use Scalar::Util qw< blessed >;
+use URI::file;
 
 use Sub::Exporter -setup => {
 	exports => [

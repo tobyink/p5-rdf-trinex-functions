@@ -6,6 +6,7 @@
 	:perl_version_from _:main ;
 	:version_from _:main ;
 	:readme_from _:main ;
+	:requires "RDF::Trine 0.135", "RDF::NS", "Scalar::Util", "URI::file", "Carp", "Sub::Exporter";
 	:test_requires "Test::More 0.61"  .
 
 _:main <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileName> "lib/RDF/TrineX/Functions.pm" .
