@@ -1,0 +1,20 @@
+@prefix : <http://usefulinc.com/ns/doap#> .
+
+`RDF-TrineX-Functions`
+	:programming-language "Perl";
+	:shortdesc      "some shortcut functions for RDF::Trine's object-oriented interface";
+	:homepage       <https://metacpan.org/release/RDF-TrineX-Functions>;
+	:download-page  <https://metacpan.org/release/RDF-TrineX-Functions>;
+	:bug-database   <http://rt.cpan.org/Dist/Display.html?Queue=RDF-TrineX-Functions>;
+	:repository     [ a :HgRepository; :browse <https://bitbucket.org/tobyink/p5-rdf-trinex-functions> ];
+	:created        2012-05-30;
+	:license        <http://dev.perl.org/licenses/>;
+	:maintainer     cpan:tobyink;
+	:developer      cpan:tobyink.
+
+<http://dev.perl.org/licenses/>
+	dc:title        "the same terms as the perl 5 programming language system itself" .
+
+cpan:tobyink
+	foaf:name       "Toby Inkster";
+	foaf:mbox       <mailto:tobyink@cpan.org>.

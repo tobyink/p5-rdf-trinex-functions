@@ -1,0 +1,17 @@
+
+`RDF-TrineX-Functions 0.001 cpan:TOBYINK`
+	issued    2012-05-30;
+	label     "Initial release".
+
+`RDF-TrineX-Functions 0.002 cpan:TOBYINK`
+	issued    2012-05-30;
+	changeset [
+		item "Media types passed to 'parse' function were not being handled correctly."^^Bugfix;
+	].
+
+`RDF-TrineX-Functions 0.003 cpan:TOBYINK`
+	issued    2012-07-10;
+	changeset [
+		item "Use IO::Detect to simplify the parse function."^^Update;
+		item "The parse function now accepts unblessed 'data:' URIs."^^Addition;
+	].

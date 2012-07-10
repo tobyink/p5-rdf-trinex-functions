@@ -1,0 +1,15 @@
+
+`RDF-TrineX-Functions`
+	perl_version_from  m`RDF::TrineX::Functions`;
+	version_from       m`RDF::TrineX::Functions`;
+	readme_from        m`RDF::TrineX::Functions`;
+	requires           p`RDF::Trine 0.135`;
+	requires           p`RDF::NS`;
+	requires           p`Scalar::Util`;
+	requires           p`IO::Detect`;
+	requires           p`URI::file`;
+	requires           p`Carp`;
+	requires           p`Sub::Exporter`;
+	test_requires      p`Test::More 0.61`;
+	.
+
