@@ -196,7 +196,7 @@ sub parse
 	#
 	if (blessed($thing) && $thing->isa('URI')
 	or  blessed($thing) && $thing->isa('RDF::Trine::Node::Resource') && ($thing = $thing->uri)
-	or !blessed($thing) && $thing =~ m{^(https?|ftp|file):\S+$})
+	or !blessed($thing) && $thing =~ m{^(https?|ftp|file|data):\S+$})
 	{
 		if (is_fileuri $thing)
 		{
