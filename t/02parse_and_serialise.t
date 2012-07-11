@@ -1,7 +1,8 @@
-use Test::More tests => 5;
+use Test::More tests => 10;
 
 use RDF::Trine;
 use RDF::TrineX::Functions
+	iri       => {},
 	parse     => {},
 	serialize => { -type => RDF::Trine::Serializer::NTriples::Canonical->new };
 
@@ -29,3 +30,48 @@ foreach my $source (qw(data datahandle filename filehandle))
 		is($out, $expected, "serialize OK");
 	}
 }
+
+my $model = parse();
+isa_ok $model => 'RDF::Trine::Model';
+
+parse(
+	$in{data},
+	as    => 'NTriples',
+	into  => $model,
+	graph => 'http://example.net/g1',
+	base  => 'http://example.net/',
+);
+
+parse(
+	$in{data},
+	as    => 'NTriples',
+	into  => $model,
+	graph => iri('http://example.net/g1'),
+	base  => 'http://example.net/',
+);
+
+parse(
+	$in{data},
+	as    => 'NTriples',
+	into  => $model,
+	graph => 'http://example.net/g2',
+	base  => 'http://example.net/',
+);
+
+is $model->count_statements((undef)x4), 2, "model is correct size"
+	or note serialize($model, as => 'NQuads');
+
+my %expected = (
+	1 => 1,
+	2 => 1,
+	3 => 0,
+);
+for (qw(1 2 3))
+{
+	is(
+		$model->count_statements((undef)x3, iri("http://example.net/g$_")),
+		$expected{$_},
+		"graph http://example.net/g$_",
+	);
+}
+

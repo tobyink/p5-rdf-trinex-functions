@@ -7,11 +7,12 @@ use utf8;
 
 BEGIN {
 	$RDF::TrineX::Functions::AUTHORITY = 'cpan:TOBYINK';
-	$RDF::TrineX::Functions::VERSION   = '0.003';
+	$RDF::TrineX::Functions::VERSION   = '0.004';
 }
 
 use Carp qw< croak >;
 use IO::Detect 0.003 qw< is_filehandle is_filename is_fileuri >;
+use PerlX::Maybe qw< maybe >;
 use RDF::NS::Trine;
 use RDF::Trine qw< store >;
 use RDF::Trine::Namespace qw< rdf rdfs owl xsd >;
@@ -154,17 +155,27 @@ sub parse
 	
 	my ($thing, %opts) = @_;
 	
-	my $model  = delete($opts{into}) // delete($opts{model});
+	my $model  = delete($opts{into})   // delete($opts{model});
 	my $base   = delete($opts{base});
 	my $parser = delete($opts{parser}) // delete($opts{type})  // delete($opts{as}) // delete($opts{using});
-	
+	my $graph  = delete($opts{graph})  // delete($opts{context});
+
+	# Normalise $graph.
+	#
+	$graph = iri($graph) if defined $graph;
+
 	if (blessed($thing) && $thing->isa('RDF::Trine::Store')
 	or  blessed($thing) && $thing->isa('RDF::Trine::Model'))
 	{
 		return model($thing) unless $model;
 		
 		$thing->as_stream->each(sub {
-			$model->add_statement($_[0]);
+			my ($s, $p, $o) = shift->nodes;
+			$model->add_statement(
+				$graph
+					? statement($s, $p, $o, $graph)
+					: statement($s, $p, $o)
+			);
 		});
 		return $model;
 	}
@@ -205,7 +216,11 @@ sub parse
 		}
 		elsif (not ref $parser and $parser eq 'RDF::Trine::Parser')
 		{
-			RDF::Trine::Parser->parse_url_into_model("$thing", $model);
+			RDF::Trine::Parser->parse_url_into_model(
+				"$thing",
+				$model,
+				maybe context => $graph,
+			);
 			return $model;
 		}
 		else
@@ -213,7 +228,12 @@ sub parse
 			# UA string consistent with RDF::Trine::Parser
 			my $ua   = LWP::UserAgent->new(agent => "RDF::Trine/$RDF::Trine::VERSION");
 			my $resp = $ua->get("$thing");
-			$parser->parse_into_model(("$base"//"$thing"), $resp->decoded_content, $model);
+			$parser->parse_into_model(
+				("$base"//"$thing"),
+				$resp->decoded_content,
+				$model,
+				maybe context => $graph,
+			);
 			return $model;
 		}
 	}
@@ -223,7 +243,12 @@ sub parse
 	if (is_filename $thing)
 	{
 		$base //= URI::file->new_abs("$thing");
-		$parser->parse_file_into_model("$base", "$thing", $model);
+		$parser->parse_file_into_model(
+			"$base",
+			"$thing",
+			$model,
+			maybe context => $graph,
+		);
 		return $model;
 	}
 	
@@ -233,12 +258,22 @@ sub parse
 	#
 	if (is_filehandle $thing)
 	{
-		$parser->parse_file_into_model("$base", $thing, $model);
+		$parser->parse_file_into_model(
+			"$base",
+			$thing,
+			$model,
+			maybe context => $graph,
+		);
 		return $model;
 	}
 	
 	croak "No parser provided for parsing" unless blessed $parser;
-	$parser->parse_into_model("$base", $thing, $model);
+	$parser->parse_into_model(
+		"$base",
+		$thing,
+		$model,
+		maybe context => $graph,
+	);
 	
 	return $model;
 }
@@ -405,10 +440,11 @@ The C<parser> option can be used to provide a blessed L<RDF::Trine::Parser>
 object to use; the C<type> option can be used instead to provide a media
 type hint. The C<base> option provides the base URI. The C<model> option
 can be used to tell this function to parse into an existing model rather
-than returning a new one.
+than returning a new one. The C<graph> option may be used to provide a graph
+URI.
 
 C<into> is an alias for C<model>; C<type>, C<using> and C<as> are
-aliases for C<parser>.
+aliases for C<parser>; C<context> is an alias for C<graph>.
 
 Examples:
 

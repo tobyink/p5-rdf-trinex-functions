@@ -10,6 +10,7 @@
 	requires           p`URI::file`;
 	requires           p`Carp`;
 	requires           p`Sub::Exporter`;
+	requires           p`PerlX::Maybe`;
 	test_requires      p`Test::More 0.61`;
 	.
 

@@ -15,3 +15,9 @@
 		item "Use IO::Detect to simplify the parse function."^^Update;
 		item "The parse function now accepts unblessed 'data:' URIs."^^Addition;
 	].
+
+`RDF-TrineX-Functions 0.004 cpan:TOBYINK`
+	issued    2012-07-11;
+	changeset [
+		item "The parse function now accepts a 'graph' option."^^Addition;
+	].
