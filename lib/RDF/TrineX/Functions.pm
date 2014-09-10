@@ -7,7 +7,7 @@ use utf8;
 
 BEGIN {
 	$RDF::TrineX::Functions::AUTHORITY = 'cpan:TOBYINK';
-	$RDF::TrineX::Functions::VERSION   = '0.004';
+	$RDF::TrineX::Functions::VERSION   = '0.005';
 }
 
 use Carp qw< croak >;
