@@ -1,0 +1,13 @@
+@prefix deps:  <http://ontologi.es/doap-deps#> .
+
+<http://purl.org/NET/cpan-uri/dist/RDF-TrineX-Functions/project>
+	deps:runtime-requirement         [ deps:on "IO::Detect"^^deps:CpanId ];
+	deps:runtime-requirement         [ deps:on "URI::file"^^deps:CpanId ];
+	deps:runtime-requirement         [ deps:on "Carp"^^deps:CpanId ];
+	deps:runtime-requirement         [ deps:on "Sub::Exporter"^^deps:CpanId ];
+	deps:runtime-requirement         [ deps:on "PerlX::Maybe"^^deps:CpanId ];
+	deps:runtime-requirement         [ deps:on "RDF::Trine 0.135"^^deps:CpanId ];
+	deps:runtime-requirement         [ deps:on "RDF::NS"^^deps:CpanId ];
+	deps:runtime-requirement         [ deps:on "Scalar::Util"^^deps:CpanId ];
+	deps:test-requirement            [ deps:on "Test::More 0.61"^^deps:CpanId ].
+
